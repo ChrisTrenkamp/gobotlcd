@@ -157,12 +157,12 @@ func (lcd *LiquidCrystalLCD) pulseEnable(val byte) error {
 	if err := lcd.expandWrite(val | en); err != nil {
 		return err
 	}
-	time.Sleep(time.Millisecond)
+	time.Sleep(time.Microsecond)
 
 	if err := lcd.expandWrite(val & ^en); err != nil {
 		return err
 	}
-	time.Sleep(50 * time.Millisecond)
+	time.Sleep(50 * time.Microsecond)
 
 	return nil
 }
@@ -200,13 +200,13 @@ func (lcd *LiquidCrystalLCD) init() (err error) {
 	}
 
 	// LCD requires 40 ms after power-on before receiving commands
-	time.Sleep(50 * time.Microsecond)
+	time.Sleep(50 * time.Millisecond)
 
 	if err = lcd.write(lcd.backLight); err != nil {
 		return err
 	}
 
-	time.Sleep(time.Millisecond)
+	time.Sleep(time.Second)
 
 	if err = lcd.init4BitMode(); err != nil {
 		return err

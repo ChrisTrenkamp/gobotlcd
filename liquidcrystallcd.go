@@ -369,6 +369,7 @@ func (lcd *LiquidCrystalLCD) SetCursor(col, row byte) error {
 
 //RegisterCharacter registers a custom character to display on the lcd.
 //Any custom characters currently on the lcd will be immediately replaced.
+//location may be a number from 0 - 7.
 func (lcd *LiquidCrystalLCD) RegisterCharacter(location byte, charmap *CustomCharacter) error {
 	location &= 0x7
 

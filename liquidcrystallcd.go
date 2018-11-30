@@ -52,8 +52,6 @@ const (
 	rs byte = 0x01 // Register select bit
 )
 
-var _ gobot.Driver = (*LiquidCrystalLCD)(nil)
-
 //DotSize reprexents either a 5x8 or 5x10 dot mode for the lcd
 type DotSize byte
 
@@ -106,6 +104,8 @@ func NewLiquidCrystalLCD(a i2c.Connector, cols, rows byte, dotSize DotSize, opti
 	return ret
 }
 
+// Gobot driver interface methods
+
 // SetName sets the label for the Driver
 func (lcd *LiquidCrystalLCD) SetName(name string) {
 	lcd.name = name
@@ -119,6 +119,11 @@ func (lcd *LiquidCrystalLCD) Name() string {
 // Connection returns the Connection associated with the Driver
 func (lcd *LiquidCrystalLCD) Connection() gobot.Connection {
 	return lcd.connection.(gobot.Connection)
+}
+
+// Start initiates the Driver
+func (lcd *LiquidCrystalLCD) Start() (err error) {
+	return lcd.init()
 }
 
 // Halt terminates the Driver
@@ -137,6 +142,8 @@ func (lcd *LiquidCrystalLCD) Halt() (err error) {
 	gatherErrs(lcd.DisplayOff())
 	return
 }
+
+// end Gobot driver interface methods
 
 func (lcd *LiquidCrystalLCD) write(val byte) error {
 	return lcd.connection.WriteByte(val)
@@ -183,8 +190,7 @@ func (lcd *LiquidCrystalLCD) command(val byte) error {
 	return lcd.send(val, 0)
 }
 
-// Start initiates the Driver
-func (lcd *LiquidCrystalLCD) Start() (err error) {
+func (lcd *LiquidCrystalLCD) init() (err error) {
 	bus := lcd.GetBusOrDefault(1)
 	address := lcd.GetAddressOrDefault(0x27)
 
@@ -388,6 +394,7 @@ func (lcd *LiquidCrystalLCD) RegisterCharacter(location byte, charmap *CustomCha
 	return nil
 }
 
+//Write satisfies the io.Writer interface so it can be used with fmt or the I/O of your choice.
 func (lcd *LiquidCrystalLCD) Write(str []byte) (int, error) {
 	i := 0
 
@@ -413,6 +420,13 @@ func NewCharacter(charmap [8]byte) *CustomCharacter {
 	return &CustomCharacter{CharMap: charmap}
 }
 
+//String will return an ASCII value of the register.  Use this with Fprintf and pass in
+//your custom character, or call LiquidCrystalLCD.Write and pass in the register value.
+//  cchar := liquidcrystallcd.NewCharacter([8]byte{...})
+//  lcd.RegisterCharacter(0, cchar)
+//  lcd.Home()
+//  fmt.Fprintf(lcd, "This is a custom character: %v", cchar) // Use Fprintf...
+//  lcd.Write([]byte{0}) // ... or call the Write method
 func (c *CustomCharacter) String() string {
 	return string([]byte{c.Register})
 }

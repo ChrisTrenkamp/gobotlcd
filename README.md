@@ -1,5 +1,7 @@
 # Liquid Crystal LCD Gobot driver
 
+[![GoDoc](https://godoc.org/gopkg.in/src-d/go-git.v2?status.svg)](https://godoc.org/github.com/ChrisTrenkamp/liquidcrystallcd) [![Go Report Card](https://goreportcard.com/badge/github.com/ChrisTrenkamp/liquidcrystallcd)](https://goreportcard.com/report/github.com/ChrisTrenkamp/liquidcrystallcd)
+
 A [GoBot](https://gobot.io/) driver for [Liquid Crystal LCDs](https://www.arduino.cc/en/Reference/LiquidCrystal).  Requires an I2C connection.  Has only been tested with a 20x4 display.
 
 ### Getting started

@@ -1,6 +1,7 @@
 package liquidcrystallcd
 
 import (
+	"fmt"
 	"time"
 
 	"gobot.io/x/gobot"
@@ -121,11 +122,19 @@ func (lcd *LiquidCrystalLCD) Connection() gobot.Connection {
 }
 
 // Halt terminates the Driver
-func (lcd *LiquidCrystalLCD) Halt() (errs error) {
-	lcd.Clear()
-	lcd.BacklightOff()
-	lcd.CursorOff()
-	lcd.DisplayOff()
+func (lcd *LiquidCrystalLCD) Halt() (err error) {
+	gatherErrs := func(e error) {
+		if e != nil && err != nil {
+			err = fmt.Errorf("%v\n%v", err, e)
+		} else if e != nil && err == nil {
+			err = fmt.Errorf("%v", e)
+		}
+	}
+
+	gatherErrs(lcd.Clear())
+	gatherErrs(lcd.BacklightOff())
+	gatherErrs(lcd.CursorOff())
+	gatherErrs(lcd.DisplayOff())
 	return
 }
 

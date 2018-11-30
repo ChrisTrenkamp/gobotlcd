@@ -406,25 +406,3 @@ func NewCharacter(charmap [8]byte) *CustomCharacter {
 func (c *CustomCharacter) String() string {
 	return string([]byte{c.Register})
 }
-
-/*
-func check(e error) {
-	if e != nil {
-		panic(e)
-	}
-}
-func main() {
-	bell := NewCharacter([8]byte{0x4, 0xe, 0xe, 0xe, 0x1f, 0x0, 0x4, 0xFF})
-	r := raspi.NewAdaptor()
-	conn, err := r.GetConnection(0x27, 1)
-	check(err)
-
-	lcd := NewLiquidCrystalLCD(conn, 20, 4, DotSize5x8)
-	check(lcd.Start())
-	check(lcd.BacklightOn())
-	check(lcd.CursorOn())
-	check(lcd.RegisterCharacter(7, bell))
-	check(lcd.Home())
-	fmt.Fprintf(lcd, "Foo %v bar", bell)
-}
-*/

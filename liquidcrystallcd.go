@@ -1,4 +1,4 @@
-package liquidcrystallcd
+package gobotlcd
 
 import (
 	"fmt"

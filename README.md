@@ -1,13 +1,13 @@
-# Liquid Crystal LCD Gobot driver
+# Gobot LCD Gobot driver
 
-[![GoDoc](https://godoc.org/gopkg.in/src-d/go-git.v2?status.svg)](https://godoc.org/github.com/ChrisTrenkamp/liquidcrystallcd) [![Go Report Card](https://goreportcard.com/badge/github.com/ChrisTrenkamp/liquidcrystallcd)](https://goreportcard.com/report/github.com/ChrisTrenkamp/liquidcrystallcd)
+[![GoDoc](https://godoc.org/gopkg.in/src-d/go-git.v2?status.svg)](https://godoc.org/github.com/ChrisTrenkamp/gobotlcd) [![Go Report Card](https://goreportcard.com/badge/github.com/ChrisTrenkamp/gobotlcd)](https://goreportcard.com/report/github.com/ChrisTrenkamp/gobotlcd)
 
-A [GoBot](https://gobot.io/) driver for [Liquid Crystal LCDs](https://www.arduino.cc/en/Reference/LiquidCrystal).  Requires an I2C connection.  Has only been tested with a 20x4 display.
+A [GoBot](https://gobot.io/) driver for [LCDs](https://www.arduino.cc/en/Reference/LiquidCrystal).  Requires an I2C connection.  Has only been tested with a 20x4 display.
 
 ### Getting started
 
 ```
-go get -u github.com/ChrisTrenkamp/liquidcrystallcd
+go get -u github.com/ChrisTrenkamp/gobotlcd
 ```
 
 ### Hello World
@@ -21,10 +21,10 @@ import (
 	"gobot.io/x/gobot"
 	"gobot.io/x/gobot/platforms/raspi"
 
-	lclcd "github.com/ChrisTrenkamp/liquidcrystallcd"
+	"github.com/ChrisTrenkamp/gobotlcd"
 )
 
-var smiley = lclcd.NewCharacter([8]byte{
+var smiley = gobotlcd.NewCharacter([8]byte{
 	0x00,
 	0x00,
 	0x0A,
@@ -37,7 +37,7 @@ var smiley = lclcd.NewCharacter([8]byte{
 
 func main() {
 	rpi := raspi.NewAdaptor()
-	lcd := lclcd.NewLiquidCrystalLCD(rpi, 16, 2, lclcd.DotSize5x8)
+	lcd := gobotlcd.NewLiquidCrystalLCD(rpi, 16, 2, gobotlcd.DotSize5x8)
 
 	work := func() {
 		lcd.BacklightOn()

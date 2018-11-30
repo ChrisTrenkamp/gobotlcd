@@ -1,6 +1,6 @@
 # Liquid Crystal LCD Gobot driver
 
-A [GoBot](https://gobot.io/) driver for [Liquid Crystal LCDs](https://www.arduino.cc/en/Reference/LiquidCrystalConstructor).  Requires an I2C connection.
+A [GoBot](https://gobot.io/) driver for [Liquid Crystal LCDs](https://www.arduino.cc/en/Reference/LiquidCrystal).  Requires an I2C connection.
 
 ### Getting started
 

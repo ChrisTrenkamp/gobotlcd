@@ -79,9 +79,9 @@ type GobotLCD struct {
 	i2c.Config
 }
 
-//NewGobotLCD connects to an LCD with the given I2C connection, the given row
+//New connects to an LCD with the given I2C connection, the given row
 //and column size, and the given dot size.
-func NewGobotLCD(a i2c.Connector, cols, rows byte, dotSize DotSize, options ...func(i2c.Config)) *GobotLCD {
+func New(a i2c.Connector, cols, rows byte, dotSize DotSize, options ...func(i2c.Config)) *GobotLCD {
 	ret := &GobotLCD{
 		name:      gobot.DefaultName("LiquidCrystalLCD"),
 		displFn:   lcd4BitMode | lcd1Line | lcd5x8Dots,

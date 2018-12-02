@@ -1,3 +1,6 @@
+//gobotlcd is a driver for LCD devices, based on the
+//Arduino source code here: https://www.arduino.cc/en/Reference/LiquidCrystal
+
 package gobotlcd
 
 import (
@@ -62,8 +65,8 @@ const (
 	DotSize5x8 DotSize = lcd5x8Dots
 )
 
-//LiquidCrystalLCD controls a Liquid Crystal LCD with an I2C connection.
-type LiquidCrystalLCD struct {
+//GobotLCD controls a Liquid Crystal LCD with an I2C connection.
+type GobotLCD struct {
 	name       string
 	displFn    byte
 	displCntrl byte
@@ -76,10 +79,10 @@ type LiquidCrystalLCD struct {
 	i2c.Config
 }
 
-//NewLiquidCrystalLCD connects to an LCD with the given I2C connection, the given row
+//NewGobotLCD connects to an LCD with the given I2C connection, the given row
 //and column size, and the given dot size.
-func NewLiquidCrystalLCD(a i2c.Connector, cols, rows byte, dotSize DotSize, options ...func(i2c.Config)) *LiquidCrystalLCD {
-	ret := &LiquidCrystalLCD{
+func NewGobotLCD(a i2c.Connector, cols, rows byte, dotSize DotSize, options ...func(i2c.Config)) *GobotLCD {
+	ret := &GobotLCD{
 		name:      gobot.DefaultName("LiquidCrystalLCD"),
 		displFn:   lcd4BitMode | lcd1Line | lcd5x8Dots,
 		backLight: lcdNoBacklight,
@@ -107,27 +110,27 @@ func NewLiquidCrystalLCD(a i2c.Connector, cols, rows byte, dotSize DotSize, opti
 // Gobot driver interface methods
 
 // SetName sets the label for the Driver
-func (lcd *LiquidCrystalLCD) SetName(name string) {
+func (lcd *GobotLCD) SetName(name string) {
 	lcd.name = name
 }
 
 // Name returns the label for the Driver
-func (lcd *LiquidCrystalLCD) Name() string {
+func (lcd *GobotLCD) Name() string {
 	return lcd.name
 }
 
 // Connection returns the Connection associated with the Driver
-func (lcd *LiquidCrystalLCD) Connection() gobot.Connection {
+func (lcd *GobotLCD) Connection() gobot.Connection {
 	return lcd.connection.(gobot.Connection)
 }
 
 // Start initiates the Driver
-func (lcd *LiquidCrystalLCD) Start() (err error) {
+func (lcd *GobotLCD) Start() (err error) {
 	return lcd.init()
 }
 
 // Halt terminates the Driver
-func (lcd *LiquidCrystalLCD) Halt() (err error) {
+func (lcd *GobotLCD) Halt() (err error) {
 	gatherErrs := func(e error) {
 		if e != nil && err != nil {
 			err = fmt.Errorf("%v\n%v", err, e)
@@ -145,15 +148,15 @@ func (lcd *LiquidCrystalLCD) Halt() (err error) {
 
 // end Gobot driver interface methods
 
-func (lcd *LiquidCrystalLCD) write(val byte) error {
+func (lcd *GobotLCD) write(val byte) error {
 	return lcd.connection.WriteByte(val)
 }
 
-func (lcd *LiquidCrystalLCD) expandWrite(val byte) error {
+func (lcd *GobotLCD) expandWrite(val byte) error {
 	return lcd.write(val | lcd.backLight)
 }
 
-func (lcd *LiquidCrystalLCD) pulseEnable(val byte) error {
+func (lcd *GobotLCD) pulseEnable(val byte) error {
 	if err := lcd.expandWrite(val | en); err != nil {
 		return err
 	}
@@ -167,7 +170,7 @@ func (lcd *LiquidCrystalLCD) pulseEnable(val byte) error {
 	return nil
 }
 
-func (lcd *LiquidCrystalLCD) write4bits(val byte) error {
+func (lcd *GobotLCD) write4bits(val byte) error {
 	if err := lcd.expandWrite(val); err != nil {
 		return err
 	}
@@ -175,7 +178,7 @@ func (lcd *LiquidCrystalLCD) write4bits(val byte) error {
 	return lcd.pulseEnable(val)
 }
 
-func (lcd *LiquidCrystalLCD) send(val, mode byte) error {
+func (lcd *GobotLCD) send(val, mode byte) error {
 	high := val & byte(0xF0)
 	low := (val << 4) & 0xF0
 
@@ -186,11 +189,11 @@ func (lcd *LiquidCrystalLCD) send(val, mode byte) error {
 	return lcd.write4bits(low | mode)
 }
 
-func (lcd *LiquidCrystalLCD) command(val byte) error {
+func (lcd *GobotLCD) command(val byte) error {
 	return lcd.send(val, 0)
 }
 
-func (lcd *LiquidCrystalLCD) init() (err error) {
+func (lcd *GobotLCD) init() (err error) {
 	bus := lcd.GetBusOrDefault(1)
 	address := lcd.GetAddressOrDefault(0x27)
 
@@ -235,7 +238,7 @@ func (lcd *LiquidCrystalLCD) init() (err error) {
 	return lcd.Home()
 }
 
-func (lcd *LiquidCrystalLCD) init4BitMode() error {
+func (lcd *GobotLCD) init4BitMode() error {
 	if err := lcd.write4bits(0x03 << 4); err != nil {
 		return err
 	}
@@ -255,7 +258,7 @@ func (lcd *LiquidCrystalLCD) init4BitMode() error {
 }
 
 //Clear wipes all text from the screen and positions the cursor at the top-left
-func (lcd *LiquidCrystalLCD) Clear() error {
+func (lcd *GobotLCD) Clear() error {
 	if err := lcd.command(lcdClearDisplay); err != nil {
 		return err
 	}
@@ -265,7 +268,7 @@ func (lcd *LiquidCrystalLCD) Clear() error {
 }
 
 //Home returns the cursor to the top-left
-func (lcd *LiquidCrystalLCD) Home() error {
+func (lcd *GobotLCD) Home() error {
 	if err := lcd.command(lcdReturnHome); err != nil {
 		return err
 	}
@@ -275,91 +278,91 @@ func (lcd *LiquidCrystalLCD) Home() error {
 }
 
 //DisplayOn turns the text display on
-func (lcd *LiquidCrystalLCD) DisplayOn() error {
+func (lcd *GobotLCD) DisplayOn() error {
 	lcd.displCntrl |= lcdDisplayOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //DisplayOff turns the text display off
-func (lcd *LiquidCrystalLCD) DisplayOff() error {
+func (lcd *GobotLCD) DisplayOff() error {
 	lcd.displCntrl &= ^lcdDisplayOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //BacklightOn turns the lcd light on
-func (lcd *LiquidCrystalLCD) BacklightOn() error {
+func (lcd *GobotLCD) BacklightOn() error {
 	lcd.backLight = lcdBacklight
 	return lcd.expandWrite(0)
 }
 
 //BacklightOff turns the lcd light off
-func (lcd *LiquidCrystalLCD) BacklightOff() error {
+func (lcd *GobotLCD) BacklightOff() error {
 	lcd.backLight = lcdNoBacklight
 	return lcd.expandWrite(0)
 }
 
 //UnderlineOn turns on the underline cursor
-func (lcd *LiquidCrystalLCD) UnderlineOn() error {
+func (lcd *GobotLCD) UnderlineOn() error {
 	lcd.displCntrl |= lcdCursorOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //UnderlineOff turns off the underline cursor
-func (lcd *LiquidCrystalLCD) UnderlineOff() error {
+func (lcd *GobotLCD) UnderlineOff() error {
 	lcd.displCntrl &= ^lcdCursorOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //CursorOn turns on the blinking cursor
-func (lcd *LiquidCrystalLCD) CursorOn() error {
+func (lcd *GobotLCD) CursorOn() error {
 	lcd.displCntrl |= lcdBlinkOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //CursorOff turns off the blinking cursor
-func (lcd *LiquidCrystalLCD) CursorOff() error {
+func (lcd *GobotLCD) CursorOff() error {
 	lcd.displCntrl &= ^lcdBlinkOn
 	return lcd.command(lcdDisplayControl | lcd.displCntrl)
 }
 
 //ShiftDisplayLeft moves the text on the entire display to the left
-func (lcd *LiquidCrystalLCD) ShiftDisplayLeft() error {
+func (lcd *GobotLCD) ShiftDisplayLeft() error {
 	return lcd.command(lcdCursorShift | lcdDisplayMove | lcdMoveLeft)
 }
 
 //ShiftDisplayRight moves the text on the entire display to the right
-func (lcd *LiquidCrystalLCD) ShiftDisplayRight() error {
+func (lcd *GobotLCD) ShiftDisplayRight() error {
 	return lcd.command(lcdCursorShift | lcdDisplayMove | lcdMoveRight)
 }
 
 //PrintLeftToRight prints text from left to right. e.g. 'foo' will display as 'foo'
-func (lcd *LiquidCrystalLCD) PrintLeftToRight() error {
+func (lcd *GobotLCD) PrintLeftToRight() error {
 	lcd.displMode |= lcdEntryLeft
 	return lcd.command(lcdEntryModeSet | lcd.displMode)
 }
 
 //PrintRightToLeft prints text from right to left. e.g. 'foo' will display as 'oof'
-func (lcd *LiquidCrystalLCD) PrintRightToLeft() error {
+func (lcd *GobotLCD) PrintRightToLeft() error {
 	lcd.displMode &= ^lcdEntryLeft
 	return lcd.command(lcdEntryModeSet | lcd.displMode)
 }
 
 //AutoScrollOn 'left justifies' the text so that the display moves when
 //printing characters rather than moving the cursor
-func (lcd *LiquidCrystalLCD) AutoScrollOn() error {
+func (lcd *GobotLCD) AutoScrollOn() error {
 	lcd.displMode |= lcdEntryShiftIncrement
 	return lcd.command(lcdEntryModeSet | lcd.displMode)
 }
 
 //AutoScrollOff 'right justifies' the text so that the cursor moves when
 //printing characters rather than moving the display
-func (lcd *LiquidCrystalLCD) AutoScrollOff() error {
+func (lcd *GobotLCD) AutoScrollOff() error {
 	lcd.displMode &= ^lcdEntryShiftIncrement
 	return lcd.command(lcdEntryModeSet | lcd.displMode)
 }
 
 //SetCursor positions the cursor at the specified row/column.
-func (lcd *LiquidCrystalLCD) SetCursor(col, row byte) error {
+func (lcd *GobotLCD) SetCursor(col, row byte) error {
 	var rowOffset = []byte{0, 0x40, 0x14, 0x54}
 
 	if row > lcd.rows-1 {
@@ -376,7 +379,7 @@ func (lcd *LiquidCrystalLCD) SetCursor(col, row byte) error {
 //RegisterCharacter registers a custom character to display on the lcd.
 //Any custom characters currently on the lcd will be immediately replaced.
 //location may be a number from 0 - 7.
-func (lcd *LiquidCrystalLCD) RegisterCharacter(location byte, charmap *CustomCharacter) error {
+func (lcd *GobotLCD) RegisterCharacter(location byte, charmap *CustomCharacter) error {
 	location &= 0x7
 
 	if err := lcd.command(lcdSetCGramAddr | (location << 3)); err != nil {
@@ -395,7 +398,7 @@ func (lcd *LiquidCrystalLCD) RegisterCharacter(location byte, charmap *CustomCha
 }
 
 //Write satisfies the io.Writer interface so it can be used with fmt or the I/O of your choice.
-func (lcd *LiquidCrystalLCD) Write(str []byte) (int, error) {
+func (lcd *GobotLCD) Write(str []byte) (int, error) {
 	i := 0
 
 	for i < len(str) {

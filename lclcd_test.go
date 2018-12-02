@@ -9,7 +9,7 @@ import (
 )
 
 func TestInterfaces(t *testing.T) {
-	var _ gobot.Driver = (*LiquidCrystalLCD)(nil)
-	var _ io.Writer = (*LiquidCrystalLCD)(nil)
+	var _ gobot.Driver = (*GobotLCD)(nil)
+	var _ io.Writer = (*GobotLCD)(nil)
 	var _ fmt.Stringer = (*CustomCharacter)(nil)
 }
